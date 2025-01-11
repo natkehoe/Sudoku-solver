@@ -5,15 +5,17 @@ from matplotlib import pyplot as plt
 
 img = cv.imread("unsolved_puzzle.png")
 
-# OpenCV opens images as BRG 
-# but we want it as RGB and 
-# we also need a grayscale 
-# version
-img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-  
-# Creates the environment 
-# of the picture and shows it
-plt.subplot(1, 1, 1)
-plt.imshow(img_rgb)
-plt.show()
+
+# Show grayscale
+gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+# Show edges only
+canny = cv.Canny(img, 125, 175)
+
+# Resize image
+resized = cv.resize(img, (500,500))
+
+# cv.imshow('Unsolved puzzle', img)
+cv.imshow('Unsolved puzzle', resized)
+
+cv.waitKey(0)
