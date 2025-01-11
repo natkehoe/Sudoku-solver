@@ -1,16 +1,16 @@
 ''' For testing purposes only - test functions, ideas. '''
 
-import 
+import cv2 as cv
 from matplotlib import pyplot as plt
 
-img = cv2.imread("unsolved_puzzle.png")
+img = cv.imread("unsolved_puzzle.png")
 
 # OpenCV opens images as BRG 
 # but we want it as RGB and 
 # we also need a grayscale 
 # version
-img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
   
 # Creates the environment 
 # of the picture and shows it
