@@ -13,9 +13,9 @@ gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 canny = cv.Canny(img, 125, 175)
 
 # Resize image
-resized = cv.resize(img, (500,500))
+# resized = cv.resize(img, None)
 
-# cv.imshow('Unsolved puzzle', img)
-cv.imshow('Unsolved puzzle', resized)
+
+cv.imshow('Unsolved puzzle', img)
 
 cv.waitKey(0)
