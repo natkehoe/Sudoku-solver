@@ -18,14 +18,14 @@ import numpy as np
 # ---- Initialisation ---- #
 
 puzzle_unsolved = np.array([[0, 0, 0, 4, 0, 0, 8, 0, 0],
-                   [0, 1, 0, 8, 0, 5, 0, 0, 6],
-                   [5, 0, 0, 0, 0, 0, 4, 1, 0],
-                   [0, 0, 0, 0, 0, 0, 3, 0, 0],
-                   [0, 0, 4, 0, 0, 0, 1, 0, 7],
-                   [0, 6, 7, 0, 0, 0, 0, 5, 0],
-                   [0, 0, 0, 0, 0, 7, 0, 8, 0],
-                   [0, 0, 0, 3, 0, 0, 6, 0, 0],
-                   [3, 0, 0, 0, 9, 6, 7, 0, 2]])
+                            [0, 1, 0, 8, 0, 5, 0, 0, 6],
+                            [5, 0, 0, 0, 0, 0, 4, 1, 0],
+                            [0, 0, 0, 0, 0, 0, 3, 0, 0],
+                            [0, 0, 4, 0, 0, 0, 1, 0, 7],
+                            [0, 6, 7, 0, 0, 0, 0, 5, 0],
+                            [0, 0, 0, 0, 0, 7, 0, 8, 0],
+                            [0, 0, 0, 3, 0, 0, 6, 0, 0],
+                            [3, 0, 0, 0, 9, 6, 7, 0, 2]])
 
 puzzle = puzzle_unsolved.copy()
 
@@ -44,9 +44,7 @@ def eliminate_values(puzzle, possible_values):
                 possible_values[puzzle[row, col]-1, :, col] = False # eliminate column
 
                 # eliminate box
-                box_row = row // 3
-                box_col = col // 3
-                possible_values[puzzle[row, col]-1, box_row*3:box_row*3+3, box_col*3:box_col*3+3] = False
+                possible_values[puzzle[row, col]-1, row//3*3:row//3*3+3, col//3*3:col//3*3+3] = False
 
 def find_single_values(puzzle, possible_values):
     '''
@@ -55,9 +53,14 @@ def find_single_values(puzzle, possible_values):
     - if it's the only '''
     for row in range(9):
         for col in range(9):
-            # if only one value possible, assign to puzzle
             if np.sum(possible_values[:, row, col]) == 1: # if only one value possible, assign it to puzzle
                 puzzle[row, col] = np.argmax(possible_values[:, row, col]) + 1
+                print("New value assigned!")
+
+            # if only one cell in subgrid is possible, assign it to puzzle
+            subgrid = possible_values[:, row//3*3:row//3*3+3, col//3*3:col//3*3+3]
+            if np.sum(subgrid) == 1:
+                puzzle[row, col] = np.argmax(subgrid) + 1
                 print("New value assigned!")
 
     # # if only one cell in row/column/box has a possible value, assign it to puzzle
@@ -94,19 +97,25 @@ def print_puzzle(txtfile, puzzle):
 
 # ---- Main ---- #
 # while True:
-for i in range(1000): # while some values exist, keep eliminating
-    eliminate_values(puzzle, possible_values)
-    find_single_values(puzzle, possible_values)
+try:
+    for i in range(1000): # while some values exist, keep eliminating
+        eliminate_values(puzzle, possible_values)
+        find_single_values(puzzle, possible_values)
 
 
-# If all cells are filled, break
-if all(puzzle.flatten() != 0):
-    print("All cells filled!")
-    # break
-else:
-    print("Not all cells filled!")
+    # If all cells are filled, break
+    if all(puzzle.flatten() != 0):
+        print("All cells filled!")
+        # break
+    else:
+        print("Not all cells filled!")
 
 
-print(f"Final solution: \n{puzzle}")
+    print(f"Final solution: \n{puzzle}")
 
-print_puzzle("puzzle.txt", puzzle)
+    print_puzzle("puzzle.txt", puzzle)
+
+except Exception as e:
+    print(e)
+    print(f"Final solution: \n{puzzle}")
+    print(f"Possible values: \n{possible_values}")
