@@ -53,15 +53,26 @@ def find_single_values(puzzle, possible_values):
     - if it's the only '''
     for row in range(9):
         for col in range(9):
-            if np.sum(possible_values[:, row, col]) == 1: # if only one value possible, assign it to puzzle
-                puzzle[row, col] = np.argmax(possible_values[:, row, col]) + 1
-                print("New value assigned!")
+            if puzzle[row, col] == 0:
+                if np.sum(possible_values[:, row, col]) == 1: # if only one value possible, assign it to puzzle
+                    puzzle[row, col] = np.argmax(possible_values[:, row, col]) + 1
+                    print(f"New value assigned: {puzzle[row, col]} at [{row+1}, {col+1}]")
 
-            # if only one cell in subgrid is possible, assign it to puzzle
-            subgrid = possible_values[:, row//3*3:row//3*3+3, col//3*3:col//3*3+3]
-            if np.sum(subgrid) == 1:
-                puzzle[row, col] = np.argmax(subgrid) + 1
-                print("New value assigned!")
+                # if only one cell in subgrid is possible, assign it to puzzle
+                subgrid = possible_values[:, row//3*3:row//3*3+3, col//3*3:col//3*3+3]
+                srow = row%3
+                scol = col%3
+
+                if np.sum(subgrid) == 1:
+                    puzzle[row, col] = np.argmax(possible_values[:, row, col]) + 1
+                    print(f"New value assigned: {puzzle[row, col]} at [{row+1}, {col+1}]")
+
+                if np.sum(np.sum(subgrid, axis=1), axis=1)[srow+scol] == 1:
+                    puzzle[row, col] = np.argmax(possible_values[:, row, col]) + 1
+                    print(f"New value assigned: {puzzle[row, col]} at [{row+1}, {col+1}]")
+
+
+                
 
     # # if only one cell in row/column/box has a possible value, assign it to puzzle
     # for value in range(9):
@@ -98,9 +109,10 @@ def print_puzzle(txtfile, puzzle):
 # ---- Main ---- #
 # while True:
 try:
-    for i in range(1000): # while some values exist, keep eliminating
+    for i in range(100): # while some values exist, keep eliminating
         eliminate_values(puzzle, possible_values)
         find_single_values(puzzle, possible_values)
+        print(f"Update {i}: \n{puzzle}")
 
 
     # If all cells are filled, break
@@ -116,6 +128,6 @@ try:
     print_puzzle("puzzle.txt", puzzle)
 
 except Exception as e:
-    print(e)
-    print(f"Final solution: \n{puzzle}")
-    print(f"Possible values: \n{possible_values}")
+    print(f"\n--- Error found ---\n{e}")
+    print(f"\nFinal solution: \n{puzzle}")
+    # print(f"Possible values: \n{possible_values}")
