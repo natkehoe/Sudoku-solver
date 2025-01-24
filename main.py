@@ -46,6 +46,7 @@ def eliminate_values(puzzle, possible_values):
                 # eliminate box
                 possible_values[puzzle[row, col]-1, row//3*3:row//3*3+3, col//3*3:col//3*3+3] = False
 
+
 def find_single_values(puzzle, possible_values):
     '''
     - count number of possible values for each cell
@@ -63,13 +64,60 @@ def find_single_values(puzzle, possible_values):
                 srow = row%3
                 scol = col%3
 
-                if np.sum(subgrid) == 1:
-                    puzzle[row, col] = np.argmax(possible_values[:, row, col]) + 1
-                    print(f"New value assigned: {puzzle[row, col]} at [{row+1}, {col+1}]")
+                # if np.sum(subgrid) == 1:
+                #     puzzle[row, col] = np.argmax(possible_values[:, row, col]) + 1
+                #     print(f"New value assigned: {puzzle[row, col]} at [{row+1}, {col+1}]")
 
                 if np.sum(np.sum(subgrid, axis=1), axis=1)[srow+scol] == 1:
                     puzzle[row, col] = np.argmax(possible_values[:, row, col]) + 1
                     print(f"New value assigned: {puzzle[row, col]} at [{row+1}, {col+1}]")
+
+def find_values_by_number(puzzle, possible_values):
+    x = None
+    y = None
+
+    # Check each value if there are available spaces
+    for value in range(9):
+        checkrows = np.sum(possible_values[value,:,:], axis=1)
+        checkcols = np.sum(possible_values[value,:,:], axis=0)
+        # check if any columns only have one possibility
+        if any(checkcols == 1):
+            x = np.argmax(checkcols == 1) # select row
+            y = np.argmax(possible_values[value, :, x]) # select col
+            puzzle[y,x] = value+1 # assign value
+            print(f"New value assigned: {puzzle[y,x]} at [{y+1}, {x+1}]")
+            return
+        elif any(checkrows == 1):
+            y = np.argmax(checkrows == 1)
+            x = np.argmax(possible_values[value, y, :])
+            puzzle[y,x] = value+1
+            print(f"New value assigned: {puzzle[y,x]} at [{y+1}, {x+1}]")
+            return
+
+    # if any value only occurs once in subgrid, assign
+    for srow in range(3):
+        for scol in range(3):
+            subgrid = possible_values[:, srow*3:srow*3+3, scol*3:scol*3+3]
+
+            if any(np.sum(np.sum(subgrid, axis=1), axis=1) == 1):
+                value = np.argmax(np.sum(np.sum(subgrid, axis=1), axis=1)==1)
+                sy,sx = np.where(subgrid[value,:,:])
+
+                y = (sy + srow*3)
+                x = (sx + scol*3)
+                puzzle[y,x] = value+1
+                print(f"New value assigned: {puzzle[y,x]} at [{y+1}, {x+1}]")
+                return
+            
+    # if only one value possible in cell, assign
+    if any(np.sum(possible_values, axis=0) == 1):
+        y, x = np.where(np.sum(possible_values, axis=0))
+        value = np.argmax(possible_values[:,y,x])
+        puzzle[y,x] = value+1
+        print(f"New value assigned: {puzzle[y,x]} at [{y+1}, {x+1}]")
+        return
+
+
 
 
                 
@@ -109,9 +157,10 @@ def print_puzzle(txtfile, puzzle):
 # ---- Main ---- #
 # while True:
 try:
-    for i in range(100): # while some values exist, keep eliminating
+    for i in range(10): # while some values exist, keep eliminating
         eliminate_values(puzzle, possible_values)
-        find_single_values(puzzle, possible_values)
+        # find_single_values(puzzle, possible_values)
+        find_values_by_number(puzzle, possible_values)
         print(f"Update {i}: \n{puzzle}")
 
 
