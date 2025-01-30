@@ -187,12 +187,15 @@ def find_values_by_number(puzzle, possible_values):
             
     # if only one value possible in cell, assign
     if np.any(np.sum(possible_values, axis=0) == 1):
-        y, x = np.where(np.sum(possible_values, axis=0)==1)
-        value = np.argmax(possible_values[:,y,x])
-        # puzzle[y,x] = value+1 # assign value
-        # print(f"New value assigned: {puzzle[y,x]} at [{y+1}, {x+1}]")
-        assign_value(value, [y,x], puzzle, possible_values)
-        return
+        yvals, xvals = np.where(np.sum(possible_values, axis=0)==1)
+
+        # iterate over all found values
+        for y, x in zip(yvals, xvals):
+            value = np.argmax(possible_values[:,y,x])
+            # puzzle[y,x] = value+1 # assign value
+            # print(f"New value assigned: {puzzle[y,x]} at [{y+1}, {x+1}]")
+            assign_value(value, [y,x], puzzle, possible_values)
+            return
 
 
 def print_puzzle(txtfile, puzzle):
@@ -227,18 +230,21 @@ def print_tofile(txtfile, txt):
 # while True:
 try:
     init_eliminate_values(puzzle, possible_values)
-    for i in range(30): # while some values exist, keep eliminating
+    for i in range(60): # while some values exist, keep eliminating
+        print(i)
         # find_single_values(puzzle, possible_values)
         find_values_by_number(puzzle, possible_values)
         # print(f"Update {i}: \n{puzzle}")
 
+        if i == 53:
+            pass # DEBUG CHECKPOINT
 
-    # If all cells are filled, break
-    if all(puzzle.flatten() != 0):
-        print("All cells filled!")
-        # break
-    else:
-        print("\nNot all cells filled!")
+        if not np.any(possible_values):
+            if np.any(puzzle == 0):
+                print("ERROR - puzzle is incomplete.")
+            else:
+                print("PUZZLE IS COMPLETE!")
+            break
 
 
     print(f"Final solution: \n{puzzle}")
