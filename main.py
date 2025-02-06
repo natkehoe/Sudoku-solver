@@ -60,6 +60,9 @@ def eliminate_value(pos, puzzle, possible_values):
     possible_values[puzzle[pos[0], pos[1]]-1, pos[0], :] = False # eliminate row
     possible_values[puzzle[pos[0], pos[1]]-1, :, pos[1]] = False # eliminate column
 
+    # eliminate box
+    possible_values[puzzle[pos[0], pos[1]]-1, pos[0]//3*3:pos[0]//3*3+3, pos[1]//3*3:pos[1]//3*3+3] = False
+
 
 
 def eliminate_rowscols(puzzle, possible_values):
@@ -175,11 +178,11 @@ def find_values_by_number(puzzle, possible_values):
             subgrid = possible_values[:, srow*3:srow*3+3, scol*3:scol*3+3]
 
             if np.any(np.sum(np.sum(subgrid, axis=1), axis=1) == 1):
-                value = np.argmax(np.sum(np.sum(subgrid, axis=1), axis=1)==1)
+                value = int(np.argmax(np.sum(np.sum(subgrid, axis=1), axis=1)==1))
                 sy,sx = np.where(subgrid[value,:,:])
 
-                y = (sy + srow*3)
-                x = (sx + scol*3)
+                y = (int(sy[0]) + srow*3)
+                x = (int(sx[0]) + scol*3)
                 # puzzle[y,x] = value+1 # assign value
                 # print(f"New value assigned: {puzzle[y,x]} at [{y+1}, {x+1}]")
                 assign_value(value, [y,x], puzzle, possible_values)
@@ -230,14 +233,14 @@ def print_tofile(txtfile, txt):
 # while True:
 try:
     init_eliminate_values(puzzle, possible_values)
-    for i in range(60): # while some values exist, keep eliminating
+    for i in range(50): # while some values exist, keep eliminating
         print(i)
         # find_single_values(puzzle, possible_values)
         find_values_by_number(puzzle, possible_values)
         # print(f"Update {i}: \n{puzzle}")
 
         # if i == 53 or not possible_values[8,3,0]:
-        if i == 7: # 9 assigned to row/col [2,8] when not supposed to
+        if i == 12: # 9 assigned to row/col [2,8] when not supposed to
             pass # DEBUG CHECKPOINT
 
         if not np.any(possible_values):
