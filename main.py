@@ -136,7 +136,7 @@ def assign_value(value, pos, puzzle, possible_values):
     '''
     puzzle[pos[0],pos[1]] = value+1
     eliminate_value([pos[0], pos[1]], puzzle, possible_values)
-    print(f"New value: {puzzle[pos[0],pos[1]]} at [{pos[0]+1}, {pos[1]+1}]")
+    print(f"New value: {puzzle[pos[0],pos[1]]} at [{pos[0]}, {pos[1]}]")
 
 
 
@@ -236,7 +236,8 @@ try:
         find_values_by_number(puzzle, possible_values)
         # print(f"Update {i}: \n{puzzle}")
 
-        if i == 53:
+        # if i == 53 or not possible_values[8,3,0]:
+        if i == 7: # 9 assigned to row/col [2,8] when not supposed to
             pass # DEBUG CHECKPOINT
 
         if not np.any(possible_values):
