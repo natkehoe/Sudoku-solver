@@ -237,8 +237,8 @@ def print_tofile(txtfile, txt):
     f.close()
 
 
-# def find_pointing_pairs(puzzle, possible_values): # find values that only exist in a row/col in a subgrid
-#     pass
+def find_pointing_pairs(puzzle, possible_values): # find values that only exist in a row/col in a subgrid
+    pass
 
             
 
