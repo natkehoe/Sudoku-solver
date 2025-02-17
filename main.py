@@ -85,19 +85,30 @@ def eliminate_rowscols(puzzle, possible_values):
             # find values aligned in rows/cols
             rowValues = np.where(np.sum(np.sum(subgrid, axis=2)!=0, axis=1) == 1)
             colValues = np.where(np.sum(np.sum(subgrid, axis=1)!=0, axis=1) == 1)
+            Values = np.append(rowValues, colValues) # a full list of values that only exist in rows/cols
 
             if np.any(rowValues):
-                ''' Currently catches values that also are just single numbers'''
-                pass # delete
+                for value in rowValues:
+                    # find which row it is, and eliminate all other values outside of grid
+                    row = np.argmax(np.sum(subgrid[value,:,:], axis=2) != 0)
+
+                    # delete all possible values along row outside of subgrid
+                    possible_values[value, srow*3+row, 0:scol*3] = False
+                    possible_values[value, srow*3+row, (scol+1)*3:] = False
+                # pass # delete
 
             if np.any(colValues):
-                pass # delete
+                for value in colValues:
+                    # find which column it is, and eliminate all other values outside of grid
+                    col = np.argmax(np.sum(subgrid[value,:,:], axis=1) != 0)
+
+                    # delete all possible values along column outside of subgrid
+                    possible_values[value, 0:srow*3, scol*3+col] = False
+                    possible_values[value, (srow+1)*3:, scol*3+col] = False
 
             # find values with rows only
             # find which row it is
             # eliminate all other values outside of grid
-            
-
 
 
 def find_single_values(puzzle, possible_values):
@@ -139,6 +150,7 @@ def assign_value(value, pos, puzzle, possible_values):
     '''
     puzzle[pos[0],pos[1]] = value+1
     eliminate_value([pos[0], pos[1]], puzzle, possible_values)
+    eliminate_rowscols(puzzle, possible_values)
     print(f"New value: {puzzle[pos[0],pos[1]]} at [{pos[0]}, {pos[1]}]")
 
 
@@ -224,6 +236,10 @@ def print_tofile(txtfile, txt):
         f.write(f"{txt}")
     f.close()
 
+
+# def find_pointing_pairs(puzzle, possible_values): # find values that only exist in a row/col in a subgrid
+#     pass
+
             
 
             
@@ -252,6 +268,8 @@ try:
 
 
     print(f"Final solution: \n{puzzle}")
+
+    print(f"Possible values: \n{possible_values}")
 
 
     # Print puzzle
